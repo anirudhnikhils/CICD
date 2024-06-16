@@ -21,7 +21,7 @@ pipeline {
             steps {
                 dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                     echo 'Verifying Dockerfile exists'
-                    sh 'ls -l Dockerfile'
+                    sh 'dir Dockerfile'
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                     echo 'Building and Packaging the application'
-                    sh 'docker build -t your-app-image1:latest -f Dockerfile .'
+                    bat 'docker build -t your-app-image1:latest -f Dockerfile .'
                 }
             }
         }
@@ -40,8 +40,8 @@ pipeline {
                 dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                     echo 'Logging in and pushing the Docker image'
                     withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'REGISTRY_CREDENTIALS_USR', passwordVariable: 'REGISTRY_CREDENTIALS_PSW')]) {
-                        sh '''
-                            docker login -u $REGISTRY_CREDENTIALS_USR -p $REGISTRY_CREDENTIALS_PSW
+                        bat '''
+                            docker login -u %REGISTRY_CREDENTIALS_USR% -p %REGISTRY_CREDENTIALS_PSW%
                             docker push your-app-image1:latest
                         '''
                     }
