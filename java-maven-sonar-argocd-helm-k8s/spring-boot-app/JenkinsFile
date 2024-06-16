@@ -1,8 +1,8 @@
 pipeline {
-    agent any  // Use any available agent
+    agent any
 
     environment {
-        REGISTRY_CREDENTIALS = credentials('docker-cred')  // Load credentials
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
     }
 
     stages {
@@ -14,33 +14,44 @@ pipeline {
                         branches: [[name: 'main']],
                         userRemoteConfigs: [[url: 'https://github.com/anirudhnikhils/CICD']]
                     ])
+                    dir('abc/spring-boot-app') {
+                        script {
+                            echo 'Navigated to spring-boot-app directory'
+                        }
+                    }
                 }
             }
         }
         stage('Verify Dockerfile') {
             steps {
                 script {
-                    echo 'Verifying Dockerfile exists'
-                    bat 'if not exist Dockerfile echo Dockerfile not found && exit 1'
+                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                        echo 'Verifying Dockerfile exists'
+                        bat 'if not exist Dockerfile echo Dockerfile not found && exit 1'
+                    }
                 }
             }
         }
         stage('Build and Package') {
             steps {
                 script {
-                    echo 'Building and Packaging the application'
-                    bat 'docker build -t your-app-image1:latest -f Dockerfile .'  // Ensure correct Dockerfile name
+                    dir('abc/spring-boot-app') {
+                        echo 'Building and Packaging the application'
+                        bat 'docker build -t your-app-image1:latest -f Dockerfile .'
+                    }
                 }
             }
         }
         stage('Docker Login and Push') {
             steps {
                 script {
-                    echo 'Logging in and pushing the Docker image'
-                    bat """
-                        docker login -u ${env.REGISTRY_CREDENTIALS_USR} -p ${env.REGISTRY_CREDENTIALS_PSW}
-                        docker push your-app-image1:latest  // Replace with your Docker image name
-                    """
+                    dir('abc/spring-boot-app') {
+                        echo 'Logging in and pushing the Docker image'
+                        bat """
+                            docker login -u ${env.REGISTRY_CREDENTIALS_USR} -p ${env.REGISTRY_CREDENTIALS_PSW}
+                            docker push your-app-image1:latest
+                        """
+                    }
                 }
             }
         }
