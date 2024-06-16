@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building and Packaging the application'
-                    bat 'docker build -t your-app-image1:latest .'  // Replace with your Docker image name
+                    bat 'docker build -t your-app-image1:latest -f DockerFile .'  // Specify the Dockerfile name
                 }
             }
         }
