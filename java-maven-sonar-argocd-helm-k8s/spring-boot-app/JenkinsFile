@@ -15,7 +15,7 @@ pipeline {
       steps {
         script {
           // Assuming Git is installed on Windows
-         // sh 'git clone https://github.com/anirudhnikhils/CICD.git'
+         sh 'git clone https://github.com/anirudhnikhils/CICD.git'
         }
       }
     }
