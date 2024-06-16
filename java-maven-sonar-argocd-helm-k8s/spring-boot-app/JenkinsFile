@@ -8,21 +8,19 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        bat 'echo passed'
-        // Uncomment and adjust the following line if you need to checkout a repository
-        // git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
+        sh 'echo passed'
+        //git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
       }
     }
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "abhishekf5/ultimate-cicd:${BUILD_NUMBER}"
-        // Adjust the Dockerfile location if needed
         // DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
         REGISTRY_CREDENTIALS = credentials('docker-cred')
       }
       steps {
         script {
-            bat 'cd java-maven-sonar-argocd-helm-k8s\\spring-boot-app && docker build -t %DOCKER_IMAGE% .'
+            sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
             def dockerImage = docker.image("${DOCKER_IMAGE}")
             docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
                 dockerImage.push()
@@ -37,14 +35,14 @@ pipeline {
         }
         steps {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                bat '''
+                sh '''
                     git config user.email "anirudhnikhilsingh@gmail.com"
                     git config user.name "Nikhil Singh"
-                    set BUILD_NUMBER=%BUILD_NUMBER%
-                    sed -i "s/replaceImageTag/%BUILD_NUMBER%/g" java-maven-sonar-argocd-helm-k8s\\spring-boot-app-manifests\\deployment.yml
-                    git add java-maven-sonar-argocd-helm-k8s\\spring-boot-app-manifests\\deployment.yml
-                    git commit -m "Update deployment image to version %BUILD_NUMBER%"
-                    git push https://%GITHUB_TOKEN%@github.com/%GIT_USER_NAME%/%GIT_REPO_NAME% HEAD:main
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                    git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                 '''
             }
         }
