@@ -21,7 +21,7 @@ pipeline {
             steps {
                 dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                     echo 'Verifying Dockerfile exists'
-                    sh 'dir Dockerfile'
+                    bat 'dir Dockerfile'
                 }
             }
         }
