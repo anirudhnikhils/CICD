@@ -8,21 +8,32 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sh 'echo passed'
-                git branch: 'main', url: 'https://github.com/anirudhnikhils/CICD'
+                script {
+                    echo 'Checkout stage passed'
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: 'main']],
+                        userRemoteConfigs: [[url: 'https://github.com/anirudhnikhils/CICD']]
+                    ])
+                }
             }
         }
         stage('Build and Package') {
             steps {
-                sh 'docker build -t your-app-image1:latest .'  // Replace with your Docker image name
+                script {
+                    echo 'Building and Packaging the application'
+                    bat 'docker build -t your-app-image1:latest .'  // Replace with your Docker image name
+                }
             }
         }
         stage('Docker Login and Push') {
             steps {
-                sh '''
-                    docker login -u $REGISTRY_CREDENTIALS_USR -p $REGISTRY_CREDENTIALS_PSW
-                    docker push your-app-image1:latest  // Replace with your Docker image name
-                '''
+                script {
+                    echo 'Logging in and pushing the Docker image'
+                    bat """
+                        docker login -u ${env.REGISTRY_CREDENTIALS_USR} -p ${env.REGISTRY_CREDENTIALS_PSW}
+                        docker push your-app-image1:latest  // Replace with your Docker image name
+                    """
+                }
             }
         }
     }
