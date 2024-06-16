@@ -17,11 +17,11 @@ pipeline {
                 }
             }
         }
-        stage('Verify Files') {
+        stage('Verify Dockerfile') {
             steps {
                 script {
-                    echo 'Listing directory contents'
-                    bat 'dir'  // For Windows, use 'ls' for Unix/Linux
+                    echo 'Verifying Dockerfile exists'
+                    bat 'if not exist Dockerfile echo Dockerfile not found && exit 1'
                 }
             }
         }
