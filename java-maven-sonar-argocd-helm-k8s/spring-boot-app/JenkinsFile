@@ -37,9 +37,9 @@ pipeline {
 
         stage('Docker Login and Push') {
             steps {
-                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
-                    echo 'Logging in and pushing the Docker image'
-                    withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'REGISTRY_CREDENTIALS_USR', passwordVariable: 'REGISTRY_CREDENTIALS_PSW')]) {
+                echo 'Logging in and pushing the Docker image'
+                withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'REGISTRY_CREDENTIALS_USR', passwordVariable: 'REGISTRY_CREDENTIALS_PSW')]) {
+                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                         bat '''
                             docker login -u %REGISTRY_CREDENTIALS_USR% -p %REGISTRY_CREDENTIALS_PSW%
                             docker push your-app-image1:latest
