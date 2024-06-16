@@ -1,14 +1,12 @@
 pipeline {
   // Define agent with Docker container on Windows
   agent {
-    docker {
-      image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      args '--user docker'  // Use user with elevated Docker access
-      args '-v /var/run/docker.sock:/var/run/docker.sock'  // Mount Docker socket
-      // Consider adding a volume to share workspace directory between host and container (optional)
-    }
+agent {
+  docker {
+    image 'abhishekf5/maven-abhishek-docker-agent:v1'
+    args '--user docker -v /var/run/docker.sock:/var/run/docker.sock -v C:\ProgramData\Jenkins\.jenkins:/workspace'
   }
-
+}
   // Stages
   stages {
     stage('Checkout') {
