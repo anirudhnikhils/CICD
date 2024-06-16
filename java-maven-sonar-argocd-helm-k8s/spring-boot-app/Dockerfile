@@ -1,30 +1,13 @@
-# Use Maven to build the application
-FROM maven:3.8.1-openjdk-11 AS build
+# You can change this base image to anything else
+# But make sure to use the correct version of Java
+FROM adoptopenjdk/openjdk11:alpine-jre
 
-WORKDIR /app
+# Simply the artifact path
+ARG artifact=target/spring-boot-web.jar
 
-# Copy the Maven configuration files (if any)
-COPY pom.xml .
+WORKDIR /opt/app
 
-# Resolve Maven dependencies (if any)
-RUN mvn dependency:go-offline
+COPY ${artifact} app.jar
 
-# Copy the application source code
-COPY src ./src
-
-# Build the application
-RUN mvn package -DskipTests
-
-# Use OpenJDK 11 as the base image for the runtime environment
-FROM openjdk:11-jre-slim
-
-WORKDIR /app
-
-# Copy the packaged Spring Boot application from the build stage
-COPY --from=build /app/target/your-spring-boot-app.jar ./your-spring-boot-app.jar
-
-# Expose the port that your Spring Boot application listens on
-EXPOSE 8080
-
-# Command to run the Spring Boot application
-CMD ["java", "-jar", "your-spring-boot-app.jar"]
+# This should not be changed
+ENTRYPOINT ["java","-jar","app.jar"]
