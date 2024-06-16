@@ -25,6 +25,13 @@ pipeline {
                 }
             }
         }
+    stage('Build and Test') {
+      steps {
+        
+        // build the project and create a JAR file
+        bat 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+      }
+}
 
         stage('Build and Package') {
             steps {
