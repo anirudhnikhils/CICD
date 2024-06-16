@@ -17,11 +17,19 @@ pipeline {
                 }
             }
         }
+        stage('Verify Dockerfile') {
+            steps {
+                script {
+                    echo 'Verifying Dockerfile exists'
+                    bat 'if not exist Dockerfile echo Dockerfile not found && exit 1'
+                }
+            }
+        }
         stage('Build and Package') {
             steps {
                 script {
                     echo 'Building and Packaging the application'
-                    bat 'docker build -t your-app-image1:latest -f DockerFile .'  // Specify the Dockerfile name
+                    bat 'docker build -t your-app-image1:latest -f Dockerfile .'  // Ensure correct Dockerfile name
                 }
             }
         }
