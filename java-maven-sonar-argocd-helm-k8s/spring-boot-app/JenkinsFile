@@ -14,7 +14,7 @@ pipeline {
                         branches: [[name: 'main']],
                         userRemoteConfigs: [[url: 'https://github.com/anirudhnikhils/CICD']]
                     ])
-                    dir('abc/spring-boot-app') {
+                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
                         script {
                             echo 'Navigated to spring-boot-app directory'
                         }
