@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            // Use Maven Docker image with JDK 11
-            image 'maven:3.8.3-openjdk-11'
-            args '-v $PWD:/app'
-        }
-    }
+    agent any
 
     environment {
         REGISTRY_CREDENTIALS = credentials('docker-cred')
@@ -35,7 +29,11 @@ pipeline {
         stage('Build and Test') {
             steps {
                 // build the project and create a JAR file
-                sh 'mvn -f /app/java-maven-sonar-argocd-helm-k8s/spring-boot-app clean package'
+                script {
+                    docker.image('maven:3.8.3-openjdk-11').inside('-v $PWD:/app') {
+                        sh 'mvn -f /app/java-maven-sonar-argocd-helm-k8s/spring-boot-app clean package'
+                    }
+                }
             }
         }
 
