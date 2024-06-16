@@ -1,11 +1,8 @@
 pipeline {
   // Define agent with Docker container on Windows
-  agent {
-  docker {
-    image 'abhishekf5/maven-abhishek-docker-agent:v1'
-    args '--user docker -v /var/run/docker.sock:/var/run/docker.sock -v C:\\ProgramData\\Jenkins\\.jenkins:/workspace'
-  }
-}
+  agent any {
+
+
   // Stages
   stages {
     stage('Checkout') {
@@ -53,4 +50,5 @@ pipeline {
       }
     }
   }
+}
 }
