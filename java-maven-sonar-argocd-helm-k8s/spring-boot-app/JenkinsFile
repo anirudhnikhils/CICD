@@ -8,49 +8,42 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    echo 'Checkout stage passed'
-                    checkout([$class: 'GitSCM',
-                        branches: [[name: 'main']],
-                        userRemoteConfigs: [[url: 'https://github.com/anirudhnikhils/CICD']]
-                    ])
-                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
-                        script {
-                            echo 'Navigated to spring-boot-app directory'
-                        }
-                    }
-                }
+                echo 'Checking out the repository'
+                cleanWs()
+                checkout([$class: 'GitSCM',
+                    branches: [[name: 'main']],
+                    userRemoteConfigs: [[url: 'https://github.com/anirudhnikhils/CICD']]
+                ])
             }
         }
+
         stage('Verify Dockerfile') {
             steps {
-                script {
-                    dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
-                        echo 'Verifying Dockerfile exists'
-                        bat 'if not exist Dockerfile echo Dockerfile not found && exit 1'
-                    }
+                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                    echo 'Verifying Dockerfile exists'
+                    sh 'ls -l Dockerfile'
                 }
             }
         }
+
         stage('Build and Package') {
             steps {
-                script {
-                    dir('abc/spring-boot-app') {
-                        echo 'Building and Packaging the application'
-                        bat 'docker build -t your-app-image1:latest -f Dockerfile .'
-                    }
+                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                    echo 'Building and Packaging the application'
+                    sh 'docker build -t your-app-image1:latest -f Dockerfile .'
                 }
             }
         }
+
         stage('Docker Login and Push') {
             steps {
-                script {
-                    dir('abc/spring-boot-app') {
-                        echo 'Logging in and pushing the Docker image'
-                        bat """
-                            docker login -u ${env.REGISTRY_CREDENTIALS_USR} -p ${env.REGISTRY_CREDENTIALS_PSW}
+                dir('java-maven-sonar-argocd-helm-k8s/spring-boot-app') {
+                    echo 'Logging in and pushing the Docker image'
+                    withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'REGISTRY_CREDENTIALS_USR', passwordVariable: 'REGISTRY_CREDENTIALS_PSW')]) {
+                        sh '''
+                            docker login -u $REGISTRY_CREDENTIALS_USR -p $REGISTRY_CREDENTIALS_PSW
                             docker push your-app-image1:latest
-                        """
+                        '''
                     }
                 }
             }
