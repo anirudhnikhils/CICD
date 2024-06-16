@@ -1,12 +1,14 @@
-# Dockerfile
+# Use OpenJDK 11 as the base image
+FROM openjdk:11-jre-slim
 
-# Use AdoptOpenJDK 11 with Alpine Linux
-FROM adoptopenjdk/openjdk11:alpine-jre
+# Set the working directory in the container
+WORKDIR /app
 
-WORKDIR /opt/app
+# Copy the packaged Spring Boot application JAR file into the container at /app
+COPY target/your-spring-boot-app.jar /app/your-spring-boot-app.jar
 
-# Copy the JAR file from Maven build output into the container
-COPY target/spring-boot-web.jar app.jar
+# Expose the port that your Spring Boot application listens on
+EXPOSE 8080
 
-# This should not be changed
-ENTRYPOINT ["java","-jar","app.jar"]
+# Command to run the Spring Boot application
+CMD ["java", "-jar", "your-spring-boot-app.jar"]
